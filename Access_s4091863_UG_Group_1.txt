@@ -1,0 +1,7 @@
+This document provides access to the code and document repositories for UG Group 1
+
+Any additional details go here
+
+GitHub Link (Code repository): https://github.com/adhibyadhi/A2-Group1-UG.git
+
+Teams Link (Document repository and Communications): https://teams.microsoft.com/l/team/19%3AkOLytREqvzFi7SIXVdn_E6g6ZdvGfm9pNFRFWxfviCg1%40thread.tacv2/conversations?groupId=8b6df708-8759-4c31-8eba-db58e01ab286&tenantId=d1323671-cdbe-4417-b4d4-bdb24b51316b
