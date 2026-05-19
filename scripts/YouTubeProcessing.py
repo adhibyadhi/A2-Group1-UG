@@ -4,6 +4,8 @@ COSC2671 Social Media and Network Analytics
 @author Chenglong Ma, RMIT University, 2026
 
 YouTube version (adapted from RedditProcessing.py)
+
+Modified by Undergraduate (UG) Group 1 for Assignment 2: Choose Your Own Analysis
 """
 import re
 
