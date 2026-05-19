@@ -15,35 +15,88 @@ class YouTubeProcessing:
     Note: The core NLP logic is identical to RedditProcessing —
     tokenisation, stopword removal, and filtering are platform-agnostic.
     """
-    def __init__(self, tokeniser, stopwords):
+    def __init__(self, tokeniser=None, stopwords=None, stemmer=None):
         """
         Initialise the tokeniser and set of stopwords to use.
 
         @param tokeniser: NLTK tokeniser (e.g. TweetTokenizer)
         @param stopwords: list of stopwords to remove
+        @param stemmer: NLTK stemmer (e.g. PorterStemmer)
         """
         self.tokeniser = tokeniser
-        self.stopwords = stopwords
+        self.stopwords = set(stopwords) if stopwords is not None else set()
+        self.stemmer = stemmer
 
-    def process(self, text):
+    def clean_raw_text(self, text):
         """
-        Perform the processing.
+        Perform the cleaning of raw text.
         @param text: the text (video title or comment) to process
 
-        @returns: list of (valid) tokens in text
+        @returns: cleaned text
         """
+        text = str(text)
+        text = text.replace('\n', ' ')
+        text = text.replace('\r', ' ')
         text = text.lower()
-        tokens = self.tokeniser.tokenize(text)
-        tokens_stripped = [tok.strip() for tok in tokens]
 
-        # pattern for digits
-        # the list comprehension in return statement essentially removes
-        # all strings of digits or fractions, e.g., 6.15
-        regex_digit = re.compile(r"^\d+\s|\s\d+\s|\s\d+$")
-        # regex pattern for http
-        regex_http = re.compile(r"^http")
+        """
+        Additional regex cleaning steps:
 
-        return [tok for tok in tokens_stripped
-                if tok not in self.stopwords
-                and regex_digit.match(tok) is None
-                and regex_http.match(tok) is None]
+        - Remove URLs
+        - Remove common unicode punctuation
+        - Remove extra whitespace
+        """
+        text = re.sub(r'http\S+|www\S+', '', text)
+        text = re.sub(r'[\u2018\u2019\u201c\u201d\u2014]', '', text)
+        text = re.sub(r'\s+', ' ', text).strip()
+        
+        return text
+    
+    def process(self, text):
+        """
+        Tokenise and clean text for NLP analysis.
+
+        @param text: video title, description, comment, or reply text
+        @returns: list of processed tokens
+        """
+        text = self.clean_raw_text(text)
+        if self.tokeniser is not None:
+            tokens = self.tokeniser.tokenize(text)
+        else:
+            tokens = text.split()
+
+        processed_tokens = []
+        for token in tokens:
+            token = token.strip().lower()
+
+            # Remove URLs, numbers, empty tokens, and stopwords
+            if not token:
+                continue
+            if token in self.stopwords:
+                continue
+            if re.match(r'^http', token):
+                continue
+            if token.isdigit():
+                continue
+
+            # Remove tokens that contain no alphabetic characters
+            if re.search(r'[a-zA-Z]', token) is None:
+                continue
+            if self.stemmer is not None:
+                token = self.stemmer.stem(token)
+
+            processed_tokens.append(token)
+
+        return processed_tokens
+
+    def joined_tokens(self, text):
+        """
+        Return processed text as a single string.
+
+        This is useful for sklearn vectorisers, topic modelling,
+        TF-IDF, and sentiment-analysis pipelines.
+
+        @param text: raw text
+        @returns: cleaned token string
+        """
+        return ' '.join(self.process(text))
