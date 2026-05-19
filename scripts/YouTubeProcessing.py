@@ -5,7 +5,7 @@ COSC2671 Social Media and Network Analytics
 
 YouTube version (adapted from RedditProcessing.py)
 
-Modified by Undergraduate (UG) Group 1 for Assignment 2: Choose Your Own Analysis
+** Modified by Undergraduate (UG) Group 1 for Assignment 2: Choose Your Own Analysis **
 """
 import re
 
